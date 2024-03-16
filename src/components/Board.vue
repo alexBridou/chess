@@ -2,7 +2,7 @@
     <div class="container">
         <div class="board">
             <Case class="case" v-for="caseItem in this.board" v-bind:key="caseItem" :id="caseItem.id"
-                :color="caseItem.color"></Case>
+                :color="caseItem.color" :activePiece="caseItem.activePiece"></Case>
         </div>
     </div>
 </template>
@@ -21,6 +21,7 @@ export default {
     data() {
         return {
             board: [],
+            activePieces: [],
             columns: [
                 "a", "b", "c", "d", "e", "f", "g", "h"
             ],
@@ -30,8 +31,7 @@ export default {
 
     beforeMount() {
         this.setBoard();
-        console.log(this)
-        // this.setPieces(this.board)
+        console.log(this);
     },
 
     methods: {}
