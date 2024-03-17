@@ -1,7 +1,6 @@
 <template>
     <div class="case" :style="isBlack ? { 'background-color': 'grey' } : { 'background-color': 'white' }">
         <Piece v-if="activePiece" v-bind:key="activePiece" :name="activePiece.name" :url="getImageUrl()">
-            <!-- name: {{ activePiece.name }} -->
         </Piece>
     </div>
 </template>
@@ -32,7 +31,7 @@ export default {
 <style>
 .case {
     display: inline-block;
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
 }
 </style>

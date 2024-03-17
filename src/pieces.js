@@ -124,7 +124,7 @@ export default {
                 {
                     id: "bb1",
                     name: "B",
-                    startingCase: "c1",
+                    startingCase: "c8",
                     color: "B"
                 },
                 {

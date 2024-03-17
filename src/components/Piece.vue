@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="piece-container">
         <img class="picto" :src="url" alt="">
     </div>
 </template>
@@ -11,24 +11,22 @@ export default {
         }
     },
     props: {
-        url: "src/assets/pieces/B.png",
+        url: "",
         color: "",
         name: ""
-    },
-    methods: {
-        getImageUrl: function () {
-            return "src/assets/pieces/B.png";
-        }
     }
 }
 </script>
 
 <style>
-.container {
+.piece-container {
     display: flex;
+    justify-content: center;
 }
+
 .picto {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
+    margin-top: 8%;
 }
 </style>

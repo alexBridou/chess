@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="board-container">
         <div class="board">
             <Case class="case" v-for="caseItem in this.board" v-bind:key="caseItem" :id="caseItem.id"
                 :color="caseItem.color" :activePiece="caseItem.activePiece"></Case>
@@ -40,14 +40,14 @@ export default {
 </script>
 
 <style>
-.container {
+.board-container {
     border: 1px solid black;
 }
 
 .board {
     display: flex;
-    width: 400px;
-    height: 400px;
+    width: 560px;
+    height: 560px;
     flex-direction: column-reverse;
     flex-wrap: wrap;
 }
