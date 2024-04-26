@@ -13,7 +13,9 @@ export default {
     props: {
         url: "",
         color: "",
-        name: ""
+        name: "",
+        caseId: "",
+        type: ""
     }
 }
 </script>
