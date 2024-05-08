@@ -40,6 +40,37 @@ export default {
 
         getFirstPiece: function (caseId) {
             return this.pieces.find(p => p.startingCase === caseId);
-        }
+        },        
+
+        highlightCases: function (casesId = []) {
+            casesId.forEach(caseId => this.highlightCase(caseId))
+        },
+
+        highlightCase: function (caseId) {
+            const boardCase = this.$refs.caseComponent.find(c => c.id === caseId)
+            boardCase.highlightCase();
+        },
+
+        removeCasesHighlight: function () {
+            this.$refs.caseComponent.forEach(caseObj => {
+                caseObj.isHighlight = false;
+            });
+        },
+
+        getColumn: function (caseItem) {
+            return caseItem.id.split('')[0];
+        },
+
+        getLine: function (caseItem) {
+            return parseInt(caseItem.id.split('')[1]);
+        },        
+
+        isCaseFree: function (caseId) {
+            const boardCase = this.board.find(c => c.id === caseId);
+            if (!boardCase.activePiece) {
+                return true;
+            }
+            return false;
+        },
     }
 }

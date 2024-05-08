@@ -13,43 +13,36 @@ export default {
         },
 
         handlePawnSelection: function (selectedCase) {
-            console.log(selectedCase);
             const possibleCases = this.getPawnMoving(selectedCase);
-            console.log(possibleCases);
+            this.highlightCases(possibleCases);
+            this.possibleCases = possibleCases;
         },
 
         getPawnMoving: function (selectedCase) {
-            const column = selectedCase.id.split('')[0];
-            const line = parseInt(selectedCase.id.split('')[1]);
+            const isWhite = selectedCase.activePiece.color === "W"
+            const column = this.getColumn(selectedCase);
+            const line = this.getLine(selectedCase);
             const possibleCases = [];
-            const fwdOneCase = column.concat((line + 1).toString());
+            const fwdOneCase = column.concat((isWhite ? line + 1 : line - 1).toString());
             if (this.isCaseFree(fwdOneCase)) {
                 possibleCases.push(fwdOneCase)
             }
             const hasNotMoved = selectedCase.id === selectedCase.activePiece.startingCase;
-            if (hasNotMoved) {
-                const fwdTwoCases = column.concat((line + 2).toString());
+            if (hasNotMoved && this.isCaseFree(fwdOneCase)) {
+                const fwdTwoCases = column.concat((isWhite ? line + 2 : line - 2).toString());
                 if (this.isCaseFree(fwdTwoCases)) {
                     possibleCases.push(fwdTwoCases)
                 }
             }
-            possibleCases.forEach(c => this.highlightCase(c));
-
-            return "ssss"
+            return possibleCases;
         },
 
-        isCaseFree: function (caseId) {
-            const boardCase = this.board.find(c => c.id === caseId);
-            if (!boardCase.activePiece) {
-                return true;
-            }
-            return false;
-        },
-
-        highlightCase: function (caseId) {
-                // const boardCase = this.board.find(caseObj => caseObj.id === caseId);
-                const boardCase = this.$refs.caseComponent.find(c => c.id === caseId)
-               boardCase.highlightCase();
+        movePiece: function (caseToMove, pieceToMove) {
+            const newCase = this.board.find(i => i.id === caseToMove.id);
+            const previousCase = this.board.find(c => c.activePiece && c.activePiece.id === pieceToMove.id);
+            previousCase.activePiece = null;
+            newCase.activePiece = pieceToMove;
+            this.resetBoardSelection();
         }
     }
 }

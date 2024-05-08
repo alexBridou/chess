@@ -1,8 +1,9 @@
 <template>
     <div class="board-container">
-        <div class="board">
-            <Case class="case" ref="caseComponent" @caseSelection="onCaseSelection(caseItem)" v-for="caseItem in this.board" v-bind:key="caseItem" :id="caseItem.id"
-                :color="caseItem.color" :activePiece="caseItem.activePiece" :isHighlight="false" ></Case>
+        <div class="board" v-on:click.right="onRightClick($event)">
+            <Case class="case" ref="caseComponent" @caseSelection="onCaseSelection(caseItem)"
+                v-for="caseItem in this.board" v-bind:key="caseItem" :id="caseItem.id" :color="caseItem.color"
+                :activePiece="caseItem.activePiece" :isHighlight="false"></Case>
         </div>
     </div>
 </template>
@@ -22,7 +23,9 @@ export default {
     data() {
         return {
             board: [],
-            activePieces: [],
+            activePieces: [], // pices on the board
+            selectedPiece: null, // piece selected by player
+            possibleCases: null,
             columns: [
                 "a", "b", "c", "d", "e", "f", "g", "h"
             ],
@@ -39,13 +42,34 @@ export default {
     methods: {
         onCaseSelection: function (caseObject) {
             if (caseObject.activePiece) {
+                this.selectedPiece = caseObject.activePiece;
                 return this.handlePieceSelection(caseObject)
+            } else if (this.selectedPiece) {
+                return this.handleFreeCaseSelection(caseObject);
             }
-            return false;
+        },
+
+        onRightClick: function (e) {
+            if (e) {
+                e.preventDefault();
+            }
+            this.resetBoardSelection();
         },
 
         handlePieceSelection: function (caseObject) {
             this._handlePieceSelection(caseObject)
+        },
+
+        handleFreeCaseSelection: function (caseObject) {
+            if (this.possibleCases && this.possibleCases.find(p => p === caseObject.id)) {
+                return this.movePiece(caseObject, this.selectedPiece);
+            }
+        },
+
+        resetBoardSelection: function () {
+            this.selectedPiece = null;
+            this.possibleCases = null;
+            this.removeCasesHighlight();
         }
     }
 
