@@ -1,7 +1,7 @@
 <template>
     <div class="case" @click="$emit('caseSelection')"
-        :style="isHighlightCapture? {'background-color': 'red'} : isBlack ? { 'background-color': 'grey' } : { 'background-color': 'white' }">
-        <Piece v-if="activePiece" v-bind:key="activePiece" :name="activePiece.name" :url="getImageUrl()"
+        :style="isHighlightCapture ? { 'background-color': 'red' } : isBlack ? { 'background-color': 'grey' } : { 'background-color': 'white' }">
+        <Piece v-if="activePiece" v-bind:key="activePiece" :name="activePiece.name" :url="getImageUrl(activePiece)"
             :caseId="this.id" :color="activePiece.color" :type="activePiece.type">
         </Piece>
         <HighlightDot v-if="isHighlight"></HighlightDot>
@@ -11,8 +11,10 @@
 <script>
 import Piece from "../components/Piece.vue";
 import HighlightDot from "../components/icons/HighlightDot.vue"
+import pieceService from "../services/pieceService"
 export default {
     components: { Piece, HighlightDot },
+    mixins: [pieceService],
     data() {
         return {
             isBlack: this.color === "B",
@@ -26,11 +28,6 @@ export default {
         activePiece: null
     },
     methods: {
-        getImageUrl: function () {
-            const name = this.activePiece.name.concat(this.activePiece.color);
-            return "src/assets/pieces/" + name + ".png";
-        },
-
         highlightCase: function () {
             this.isHighlight = true;
         },

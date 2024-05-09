@@ -24,6 +24,7 @@ export default {
         return {
             board: [],
             activePieces: [], // pices on the board
+            capturedPieces: [],
             selectedPiece: null, // piece selected by player
             possibleCases: null,
             possibleTakes: null,

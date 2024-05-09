@@ -12,6 +12,11 @@ export default {
             }
         },
 
+        getImageUrl: function (piece) {
+            const name = piece.name.concat(piece.color);
+            return "src/assets/pieces/" + name + ".png";
+        },
+
         handlePawnSelection: function (selectedCase) {
             const possibleCases = this.getPawnMoving(selectedCase);
             const possibleTakes = this.getPawnCapture(selectedCase);
@@ -46,17 +51,25 @@ export default {
             const line = this.getLine(selectedCase);
             const possibleCases = [];
             const currentColumnIndex = this.columns.indexOf(column);
-            const previousColumn = this.columns[isWhite ? currentColumnIndex - 1 : currentColumnIndex + 1];
-            const nextColumn = this.columns[isWhite ? currentColumnIndex + 1 : currentColumnIndex - 1];
+            const previousColumn = this.columns[isWhite ? currentColumnIndex - 1 : currentColumnIndex + 1] || "";
+            const nextColumn = this.columns[isWhite ? currentColumnIndex + 1 : currentColumnIndex - 1] || "";
             const leftCase = previousColumn.concat(isWhite ? line + 1 : line - 1);
             const rightCase = nextColumn.concat(isWhite ? line + 1 : line - 1);
-            if (!this.isCaseFree(leftCase) && this.isOpponentPiece(selectedCase.activePiece.color, leftCase)) {
-                possibleCases.push(leftCase);
+            if (this.isCase(leftCase)) {
+                if (!this.isCaseFree(leftCase) && this.isOpponentPiece(selectedCase.activePiece.color, leftCase)) {
+                    possibleCases.push(leftCase);
+                }
             }
-            if (!this.isCaseFree(rightCase) && this.isOpponentPiece(selectedCase.activePiece.color, rightCase)) {
-                possibleCases.push(rightCase);
+            if (this.isCase(rightCase)) {
+                if (!this.isCaseFree(rightCase) && this.isOpponentPiece(selectedCase.activePiece.color, rightCase)) {
+                    possibleCases.push(rightCase);
+                }
             }
             return possibleCases;
+        },
+
+        isCase: function (caseId) {
+            return this.board.find(c => c.id === caseId);
         },
 
         isOpponentPiece: function (color, caseId) {
@@ -74,9 +87,11 @@ export default {
 
         capturePiece: function (caseToTake, piece) {
             const capturedPiece = this.board.find(c => c.id === caseToTake.id).activePiece;
+            this.capturedPieces.push(capturedPiece);
             const index = this.activePieces.indexOf(capturedPiece);
             this.activePieces.splice(index, 1);
             this.movePiece(caseToTake, piece);
+            return this.$emit('pieceTaken', this.capturedPieces);
 
         }
     }
