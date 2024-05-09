@@ -1,13 +1,19 @@
 <template>
-    <Board></Board>
+    <BoardController v-if="gameStarted"></BoardController>
 </template>
 
 <script>
-import Board from "../components/Board.vue";
+import BoardController from "./BoardController.vue"
 
 export default {
     components: {
-        Board
+        BoardController
+    },
+
+    data() {
+        return {
+            gameStarted: true
+        }
     }
 }
 </script>

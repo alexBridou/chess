@@ -43,17 +43,27 @@ export default {
         },        
 
         highlightCases: function (casesId = []) {
-            casesId.forEach(caseId => this.highlightCase(caseId))
+            casesId.forEach(caseId => this.highlightCase(caseId));
         },
 
         highlightCase: function (caseId) {
-            const boardCase = this.$refs.caseComponent.find(c => c.id === caseId)
+            const boardCase = this.$refs.caseComponent.find(c => c.id === caseId);
             boardCase.highlightCase();
+        },
+
+        highlightCaptureCases: function (casesId = []) {
+            casesId.forEach(caseId => this.highlightCaptureCase(caseId));
+        },
+
+        highlightCaptureCase: function (caseId) {
+            const boardCase = this.$refs.caseComponent.find(c => c.id === caseId);
+            boardCase.highlightCapture();
         },
 
         removeCasesHighlight: function () {
             this.$refs.caseComponent.forEach(caseObj => {
                 caseObj.isHighlight = false;
+                caseObj.isHighlightCapture = false;
             });
         },
 
@@ -67,7 +77,7 @@ export default {
 
         isCaseFree: function (caseId) {
             const boardCase = this.board.find(c => c.id === caseId);
-            if (!boardCase.activePiece) {
+            if (boardCase && !boardCase.activePiece) {
                 return true;
             }
             return false;

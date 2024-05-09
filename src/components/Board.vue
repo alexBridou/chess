@@ -26,6 +26,7 @@ export default {
             activePieces: [], // pices on the board
             selectedPiece: null, // piece selected by player
             possibleCases: null,
+            possibleTakes: null,
             columns: [
                 "a", "b", "c", "d", "e", "f", "g", "h"
             ],
@@ -41,12 +42,11 @@ export default {
 
     methods: {
         onCaseSelection: function (caseObject) {
-            if (caseObject.activePiece) {
+            if (caseObject.activePiece && !this.selectedPiece) {
                 this.selectedPiece = caseObject.activePiece;
                 return this.handlePieceSelection(caseObject)
-            } else if (this.selectedPiece) {
-                return this.handleFreeCaseSelection(caseObject);
             }
+            return this.handleCaseSelection(caseObject);
         },
 
         onRightClick: function (e) {
@@ -60,9 +60,11 @@ export default {
             this._handlePieceSelection(caseObject)
         },
 
-        handleFreeCaseSelection: function (caseObject) {
+        handleCaseSelection: function (caseObject) {
             if (this.possibleCases && this.possibleCases.find(p => p === caseObject.id)) {
                 return this.movePiece(caseObject, this.selectedPiece);
+            } else if (this.possibleTakes && this.possibleTakes.find(p => p === caseObject.id)) {
+                return this.capturePiece(caseObject, this.selectedPiece);
             }
         },
 

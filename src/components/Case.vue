@@ -1,6 +1,6 @@
 <template>
     <div class="case" @click="$emit('caseSelection')"
-        :style="isBlack ? { 'background-color': 'grey' } : { 'background-color': 'white' }">
+        :style="isHighlightCapture? {'background-color': 'red'} : isBlack ? { 'background-color': 'grey' } : { 'background-color': 'white' }">
         <Piece v-if="activePiece" v-bind:key="activePiece" :name="activePiece.name" :url="getImageUrl()"
             :caseId="this.id" :color="activePiece.color" :type="activePiece.type">
         </Piece>
@@ -16,7 +16,8 @@ export default {
     data() {
         return {
             isBlack: this.color === "B",
-            isHighlight: false
+            isHighlight: false,
+            isHighlightCapture: false
         }
     },
     props: {
@@ -32,6 +33,10 @@ export default {
 
         highlightCase: function () {
             this.isHighlight = true;
+        },
+
+        highlightCapture: function () {
+            this.isHighlightCapture = true;
         }
     }
 }
