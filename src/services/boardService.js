@@ -24,7 +24,7 @@ export default {
                 })
             })
         },
-        
+
         getColor: function (rowIndex, columnIndex) {
             const oddRow = this.isOdd(rowIndex + 1);
             const oddColumn = this.isOdd(columnIndex + 1);;
@@ -40,7 +40,7 @@ export default {
 
         getFirstPiece: function (caseId) {
             return this.pieces.find(p => p.startingCase === caseId);
-        },        
+        },
 
         highlightCases: function (casesId = []) {
             casesId.forEach(caseId => this.highlightCase(caseId));
@@ -73,7 +73,119 @@ export default {
 
         getLine: function (caseItem) {
             return parseInt(caseItem.id.split('')[1]);
-        },        
+        },
+
+        getDiagonals: function (selectedCase) {
+            const rightUpDiag = this.getRightUpDiag(selectedCase);
+            const leftUpDiag = this.getLeftUpDiag(selectedCase);
+            const rightDownDiag = this.getRightDownDiag(selectedCase);
+            const leftDownDiag = this.getLeftDownDiag(selectedCase);
+            return [rightUpDiag, leftUpDiag, rightDownDiag, leftDownDiag].flat();
+        },
+
+        getLeftDownDiag: function (selectedCase) {
+            const line = this.getLine(selectedCase);
+            const column = this.getColumn(selectedCase);
+            const currentColumnIndex = this.columns.indexOf(column);
+            const arr = [];
+            let previousColumnIndex = currentColumnIndex;
+            let previousLine = line;
+            let blocked = false;
+            for (let i = 1; i < 8; i++) {
+                if (!blocked) {
+                    if (previousLine > 0 && previousColumnIndex > 0) {
+                        const caseId = (this.columns[previousColumnIndex - 1]).concat(previousLine -1);
+                        if (this.isCase(caseId)) {
+                            arr.push(caseId);
+                            if (!this.isCaseFree(caseId)) {
+                                blocked = true;
+                            }
+                        }
+                        previousLine--;
+                        previousColumnIndex--;
+                    }
+                }
+            }
+            return arr;
+        },
+
+        getRightDownDiag: function (selectedCase) {
+            const line = this.getLine(selectedCase);
+            const column = this.getColumn(selectedCase);
+            const currentColumnIndex = this.columns.indexOf(column);
+            const arr = [];
+            let previousColumnIndex = currentColumnIndex;
+            let previousLine = line;
+            let blocked = false;
+            for (let i = 1; i < 8; i++) {
+                if (!blocked) {
+                    if (previousLine > 0 && previousColumnIndex < 7) {
+                        const caseId = (this.columns[previousColumnIndex + 1]).concat(previousLine -1);
+                        if (this.isCase(caseId)) {
+                            arr.push(caseId);
+                            if (!this.isCaseFree(caseId)) {
+                                blocked = true;
+                            }
+                        }
+                        previousLine--;
+                        previousColumnIndex++;
+                    }
+                }
+            }
+            return arr;
+        },
+
+        getLeftUpDiag: function (selectedCase) {
+            const line = this.getLine(selectedCase);
+            const column = this.getColumn(selectedCase);
+            const currentColumnIndex = this.columns.indexOf(column);
+            const arr = [];
+            let previousColumnIndex = currentColumnIndex;
+            let previousLine = line;
+            let blocked = false;
+            for (let i = 1; i < 8; i++) {
+                if (!blocked) {
+                    if (previousLine <= 7 && previousColumnIndex > 0) {
+                        const caseId = (this.columns[previousColumnIndex - 1]).concat(previousLine + 1);
+                        if (this.isCase(caseId)) {
+                            arr.push(caseId);
+                            if (!this.isCaseFree(caseId)) {
+                                blocked = true;
+                            }
+                        }
+                        previousLine++;
+                        previousColumnIndex--;
+                    }
+                }
+            }
+            return arr;
+        },
+
+        getRightUpDiag: function (selectedCase) {
+            const line = this.getLine(selectedCase);
+            const column = this.getColumn(selectedCase);
+            const currentColumnIndex = this.columns.indexOf(column);
+            const arr = [];
+            let previousColumnIndex = currentColumnIndex;
+            let previousLine = line;
+            let blocked = false;
+            for (let i = 1; i < 8; i++) {
+                if (!blocked) {
+                    if (previousLine <= 7 && previousColumnIndex < 7) {
+                        const caseId = (this.columns[previousColumnIndex + 1]).concat(previousLine + 1);
+                        if (this.isCase(caseId)) {
+                            arr.push(caseId);
+                            if (!this.isCaseFree(caseId)) {
+                                blocked = true;
+                            }
+                        }
+                        previousLine++;
+                        previousColumnIndex++;
+                    }
+                }
+            }
+            return arr;
+        },
 
         isCaseFree: function (caseId) {
             const boardCase = this.board.find(c => c.id === caseId);

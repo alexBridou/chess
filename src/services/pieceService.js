@@ -1,4 +1,6 @@
+import moveService from "./moveService";
 export default {
+    mixins: [moveService],
     data() {
         return {}
     },
@@ -7,6 +9,10 @@ export default {
             switch (selectedCase.activePiece.type) {
                 case "pawn":
                     return this.handlePawnSelection(selectedCase);
+                case "knight":
+                    return this.handleKnightSelection(selectedCase);
+                case "bishop":
+                    return this.handleBishopSelection(selectedCase);
                 default:
                     return this.handlePawnSelection(selectedCase);
             }
@@ -17,6 +23,26 @@ export default {
             return "src/assets/pieces/" + name + ".png";
         },
 
+        handleBishopSelection: function (selectedCase) {
+            const possibleCases = this.getBishopMoving(selectedCase);
+            const possibleTakes = this.getBishopCapture(selectedCase);
+            this.highlightCases(possibleCases);
+            this.highlightCaptureCases(possibleTakes);
+            this.possibleCases = possibleCases;
+            this.possibleTakes = possibleTakes;
+        },
+
+        handleKnightSelection: function (selectedCase) {
+            const availableCases = this.getKnightMoving(selectedCase);
+            const possibleTakes = this.getKnightCapture(selectedCase, availableCases);
+            const possibleCases = this.filterKnightCases(availableCases, possibleTakes);
+            this.highlightCases(possibleCases);
+            this.highlightCaptureCases(possibleTakes);
+            this.possibleCases = possibleCases;
+            this.possibleTakes = possibleTakes;
+        },
+
+        ///////////////////// PAWN /////////////////////
         handlePawnSelection: function (selectedCase) {
             const possibleCases = this.getPawnMoving(selectedCase);
             const possibleTakes = this.getPawnCapture(selectedCase);
@@ -24,48 +50,6 @@ export default {
             this.highlightCaptureCases(possibleTakes);
             this.possibleCases = possibleCases;
             this.possibleTakes = possibleTakes;
-        },
-
-        getPawnMoving: function (selectedCase) {
-            const isWhite = selectedCase.activePiece.color === "W";
-            const column = this.getColumn(selectedCase);
-            const line = this.getLine(selectedCase);
-            const possibleCases = [];
-            const fwdOneCase = column.concat((isWhite ? line + 1 : line - 1).toString());
-            if (this.isCaseFree(fwdOneCase)) {
-                possibleCases.push(fwdOneCase)
-            }
-            const hasNotMoved = selectedCase.id === selectedCase.activePiece.startingCase;
-            if (hasNotMoved && this.isCaseFree(fwdOneCase)) {
-                const fwdTwoCases = column.concat((isWhite ? line + 2 : line - 2).toString());
-                if (this.isCaseFree(fwdTwoCases)) {
-                    possibleCases.push(fwdTwoCases)
-                }
-            }
-            return possibleCases;
-        },
-
-        getPawnCapture: function (selectedCase) {
-            const isWhite = selectedCase.activePiece.color === "W";
-            const column = this.getColumn(selectedCase);
-            const line = this.getLine(selectedCase);
-            const possibleCases = [];
-            const currentColumnIndex = this.columns.indexOf(column);
-            const previousColumn = this.columns[isWhite ? currentColumnIndex - 1 : currentColumnIndex + 1] || "";
-            const nextColumn = this.columns[isWhite ? currentColumnIndex + 1 : currentColumnIndex - 1] || "";
-            const leftCase = previousColumn.concat(isWhite ? line + 1 : line - 1);
-            const rightCase = nextColumn.concat(isWhite ? line + 1 : line - 1);
-            if (this.isCase(leftCase)) {
-                if (!this.isCaseFree(leftCase) && this.isOpponentPiece(selectedCase.activePiece.color, leftCase)) {
-                    possibleCases.push(leftCase);
-                }
-            }
-            if (this.isCase(rightCase)) {
-                if (!this.isCaseFree(rightCase) && this.isOpponentPiece(selectedCase.activePiece.color, rightCase)) {
-                    possibleCases.push(rightCase);
-                }
-            }
-            return possibleCases;
         },
 
         isCase: function (caseId) {

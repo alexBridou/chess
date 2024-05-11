@@ -29,7 +29,8 @@ export default {
 
 <style>
 .boardController {
-    display: flex
+    display: flex;
+    width: 1000px;
 }
 
 .switch {

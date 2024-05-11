@@ -39,6 +39,7 @@ export default {
 .captureZone {
     display: flex;
     height: 560px;
+    width: 20%;
     justify-content: space-between;
 }
 </style>
