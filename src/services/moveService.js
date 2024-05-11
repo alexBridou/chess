@@ -4,7 +4,24 @@ export default {
         return {}
     },
     methods: {
+        ///////////////////// QUEEN /////////////////////
+        getQueenMoving: function (selectedCase) {
+            const line = this.getLine(selectedCase);
+            const column = this.getColumn(selectedCase);
+            return this.getQueenLegalMoves(selectedCase, line, column);
+        },
 
+        getQueenLegalMoves: function (selectedCase, line, column) {
+            const rookMoving = this.getRookMoving(selectedCase);
+            const bishopMoving = this.getBishopMoving(selectedCase);
+            return Array.from(new Set(rookMoving.concat(bishopMoving)));
+        },
+
+        getQueenCapture: function (selectedCase) {
+            const rookCapture = this.getRookCapture(selectedCase);
+            const bishopCapture = this.getBishopCapture(selectedCase);
+            return Array.from(new Set(rookCapture.concat(bishopCapture)));
+        },
         ///////////////////// ROOK /////////////////////
         getRookMoving: function (selectedCase) {
             const line = this.getLine(selectedCase);

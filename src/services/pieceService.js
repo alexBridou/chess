@@ -15,6 +15,8 @@ export default {
                     return this.handleBishopSelection(selectedCase);
                 case "rook":
                     return this.handleRookSelection(selectedCase);
+                case "queen":
+                    return this.handleQueenSelection(selectedCase);
                 default:
                     return this.handlePawnSelection(selectedCase);
             }
@@ -23,6 +25,16 @@ export default {
         getImageUrl: function (piece) {
             const name = piece.name.concat(piece.color);
             return "src/assets/pieces/" + name + ".png";
+        },
+
+        handleQueenSelection: function (selectedCase) {
+            const possibleCases = this.getQueenMoving(selectedCase);
+
+            const possibleTakes = this.getQueenCapture(selectedCase);
+            this.highlightCases(possibleCases);
+            this.highlightCaptureCases(possibleTakes);
+            this.possibleCases = possibleCases;
+            this.possibleTakes = possibleTakes;
         },
 
         handleRookSelection: function (selectedCase) {
