@@ -71,8 +71,16 @@ export default {
             return caseItem.id.split('')[0];
         },
 
+        getCompleteColumn: function (column) {
+            return this.board.filter(caseItem => this.getColumn(caseItem) === column);
+        },
+
         getLine: function (caseItem) {
             return parseInt(caseItem.id.split('')[1]);
+        },
+
+        getCompleteLine: function (line) {
+            return this.board.filter(caseItem => this.getLine(caseItem) === line);
         },
 
         getDiagonals: function (selectedCase) {
@@ -94,7 +102,7 @@ export default {
             for (let i = 1; i < 8; i++) {
                 if (!blocked) {
                     if (previousLine > 0 && previousColumnIndex > 0) {
-                        const caseId = (this.columns[previousColumnIndex - 1]).concat(previousLine -1);
+                        const caseId = (this.columns[previousColumnIndex - 1]).concat(previousLine - 1);
                         if (this.isCase(caseId)) {
                             arr.push(caseId);
                             if (!this.isCaseFree(caseId)) {
@@ -120,7 +128,7 @@ export default {
             for (let i = 1; i < 8; i++) {
                 if (!blocked) {
                     if (previousLine > 0 && previousColumnIndex < 7) {
-                        const caseId = (this.columns[previousColumnIndex + 1]).concat(previousLine -1);
+                        const caseId = (this.columns[previousColumnIndex + 1]).concat(previousLine - 1);
                         if (this.isCase(caseId)) {
                             arr.push(caseId);
                             if (!this.isCaseFree(caseId)) {

@@ -13,6 +13,8 @@ export default {
                     return this.handleKnightSelection(selectedCase);
                 case "bishop":
                     return this.handleBishopSelection(selectedCase);
+                case "rook":
+                    return this.handleRookSelection(selectedCase);
                 default:
                     return this.handlePawnSelection(selectedCase);
             }
@@ -21,6 +23,16 @@ export default {
         getImageUrl: function (piece) {
             const name = piece.name.concat(piece.color);
             return "src/assets/pieces/" + name + ".png";
+        },
+
+        handleRookSelection: function (selectedCase) {
+            const possibleCases = this.getRookMoving(selectedCase);
+
+            const possibleTakes = this.getRookCapture(selectedCase);
+            this.highlightCases(possibleCases);
+            this.highlightCaptureCases(possibleTakes);
+            this.possibleCases = possibleCases;
+            this.possibleTakes = possibleTakes;
         },
 
         handleBishopSelection: function (selectedCase) {

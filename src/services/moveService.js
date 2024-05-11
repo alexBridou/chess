@@ -5,8 +5,192 @@ export default {
     },
     methods: {
 
-        ///////////////////// BISHOP /////////////////////
+        ///////////////////// ROOK /////////////////////
+        getRookMoving: function (selectedCase) {
+            const line = this.getLine(selectedCase);
+            const column = this.getColumn(selectedCase);
+            return this.getRookLegalMoves(selectedCase, line, column);
+        },
 
+        getRookLegalMoves: function (selectedCase, line, column) {
+            const completeLine = this.getCompleteLine(line);
+            const completeColumn = this.getCompleteColumn(column);
+            return this.cleanRookMoves(selectedCase, completeLine, completeColumn);
+        },
+
+        cleanRookMoves: function (selectedCase, line, column) {
+            const lineMoves = this.getLineMoves(selectedCase, line);
+            const columnMoves = this.getColumnMoves(selectedCase, column);
+            return lineMoves.concat(columnMoves);
+        },
+
+        getRookCapture: function (selectedCase) {
+            const line = this.getLine(selectedCase);
+            const column = this.getColumn(selectedCase);
+            const completeLine = this.getCompleteLine(line);
+            const completeColumn = this.getCompleteColumn(column);
+            const lineCapture = this.getLineCapture(selectedCase, completeLine);
+            const columnCapture = this.getColumnCapture(selectedCase, completeColumn);
+            return lineCapture.concat(columnCapture);
+        },
+
+        getColumnCapture: function (selectedCase, column) {
+            const index = column.findIndex(c => c.id === selectedCase.id);
+            let blockDown = false;
+            let blockUp = false;
+            let tmpIndex = index;
+            const arr = [];
+            for (let i = 0; i < column.length; i++) {
+                if (!blockDown) {
+                    const previousCase = column[tmpIndex - 1];
+                    tmpIndex--;
+                    if (previousCase) {
+                        if (!this.isCaseFree(previousCase.id)) {
+                            blockDown = true;
+                            if (this.isOpponentPiece(selectedCase.activePiece.color, previousCase.id)) {
+                                arr.push(previousCase.id)
+                            }
+                        }
+
+                    }
+                }
+            }
+            tmpIndex = index;
+            for (let j = 0; j < column.length; j++) {
+                if (!blockUp) {
+                    const nextCase = column[tmpIndex + 1];
+                    tmpIndex++;
+                    if (nextCase) {
+                        if (!this.isCaseFree(nextCase.id)) {
+                            blockUp = true;
+                            if (this.isOpponentPiece(selectedCase.activePiece.color, nextCase.id)) {
+                                arr.push(nextCase.id)
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return arr;
+        },
+
+        getLineCapture: function (selectedCase, line) {
+            const index = line.findIndex(c => c.id === selectedCase.id);
+            let blockLeft = false;
+            let blockRight = false;
+            let tmpIndex = index;
+            const arr = [];
+            for (let i = 0; i < line.length; i++) {
+                if (!blockLeft) {
+                    const previousCase = line[tmpIndex - 1];
+                    tmpIndex--;
+                    if (previousCase) {
+                        if (!this.isCaseFree(previousCase.id)) {
+                            blockLeft = true;
+                            if (this.isOpponentPiece(selectedCase.activePiece.color, previousCase.id)) {
+                                arr.push(previousCase.id)
+                            }
+                        }
+
+                    }
+                }
+            }
+            tmpIndex = index;
+            for (let j = 0; j < line.length; j++) {
+                if (!blockRight) {
+                    const nextCase = line[tmpIndex + 1];
+                    tmpIndex++;
+                    if (nextCase) {
+                        if (!this.isCaseFree(nextCase.id)) {
+                            blockRight = true;
+                            if (this.isOpponentPiece(selectedCase.activePiece.color, nextCase.id)) {
+                                arr.push(nextCase.id)
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return arr;
+        },
+
+        getColumnMoves: function (selectedCase, column) {
+            const index = column.findIndex(c => c.id === selectedCase.id);
+            let blockDown = false;
+            let blockUp = false;
+            let tmpIndex = index;
+            const arr = [];
+            for (let i = 0; i < column.length; i++) {
+                if (!blockDown) {
+                    const previousCase = column[tmpIndex - 1];
+                    if (previousCase) {
+                        if (this.isCaseFree(previousCase.id)) {
+                            tmpIndex--;
+                            arr.push(previousCase.id)
+                        } else {
+                            blockDown = true;
+                        }
+                    }
+                }
+            }
+            tmpIndex = index;
+            for (let j = 0; j < column.length; j++) {
+                if (!blockUp) {
+                    const nextCase = column[tmpIndex + 1];
+                    if (nextCase) {
+                        if (this.isCaseFree(nextCase.id)) {
+                            tmpIndex++;
+                            arr.push(nextCase.id)
+                        } else {
+                            blockUp = true;
+                        }
+                    }
+                }
+            }
+
+            return arr;
+        },
+
+        getLineMoves: function (selectedCase, line) {
+            const index = line.findIndex(c => c.id === selectedCase.id);
+            let blockLeft = false;
+            let blockRight = false;
+            let tmpIndex = index;
+            const arr = [];
+            for (let i = 0; i < line.length; i++) {
+                if (!blockLeft) {
+                    const previousCase = line[tmpIndex - 1];
+                    if (previousCase) {
+                        if (this.isCaseFree(previousCase.id)) {
+                            tmpIndex--;
+                            arr.push(previousCase.id)
+                        } else {
+                            blockLeft = true;
+                        }
+                    }
+                }
+            }
+            tmpIndex = index;
+            for (let j = 0; j < line.length; j++) {
+                if (!blockRight) {
+                    const nextCase = line[tmpIndex + 1];
+                    if (nextCase) {
+                        if (this.isCaseFree(nextCase.id)) {
+                            tmpIndex++;
+                            arr.push(nextCase.id)
+                        } else {
+                            blockRight = true;
+                        }
+                    }
+                }
+            }
+
+            return arr;
+        },
+
+        ///////////////////// BISHOP /////////////////////
         getBishopMoving: function (selectedCase) {
             const diagonals = this.getDiagonals(selectedCase);
             const possibleCaptures = this._getBishopCapture(selectedCase, diagonals);
