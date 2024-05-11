@@ -17,8 +17,30 @@ export default {
                     return this.handleRookSelection(selectedCase);
                 case "queen":
                     return this.handleQueenSelection(selectedCase);
+                case "king":
+                    return this.handleKingSelection(selectedCase);
                 default:
                     return this.handlePawnSelection(selectedCase);
+            }
+        },
+
+        getPieceCaptures: function (selectedCase) {
+            switch (selectedCase.activePiece.type) {
+                case "pawn":
+                    return this.getPawnCapture(selectedCase);
+                case "knight":
+                    const availableCases = this.getKnightMoving(selectedCase);
+                    return this.getKnightCapture(selectedCase, availableCases);
+                case "bishop":
+                    return this.getBishopCapture(selectedCase);
+                case "rook":
+                    return this.getRookCapture(selectedCase);
+                case "queen":
+                    return this.getQueenCapture(selectedCase);
+                case "king":
+                    return this.getKingCapture(selectedCase);
+                default:
+                    return this.getPawnCapture(selectedCase);
             }
         },
 
@@ -27,9 +49,39 @@ export default {
             return "src/assets/pieces/" + name + ".png";
         },
 
+        movePiece: function (caseToMove, pieceToMove) {
+            const newCase = this.board.find(i => i.id === caseToMove.id);
+            const previousCase = this.board.find(c => c.activePiece && c.activePiece.id === pieceToMove.id);
+            previousCase.activePiece = null;
+            newCase.activePiece = pieceToMove;
+            this.resetBoardSelection();
+            return this.$emit('pieceMoved', {
+                newCase,
+                pieceToMove
+            });
+        },
+
+        capturePiece: function (caseToTake, piece) {
+            const capturedPiece = this.board.find(c => c.id === caseToTake.id).activePiece;
+            this.capturedPieces.push(capturedPiece);
+            const index = this.activePieces.indexOf(capturedPiece);
+            this.activePieces.splice(index, 1);
+            this.movePiece(caseToTake, piece);
+            return this.$emit('pieceTaken', this.capturedPieces);
+
+        },
+
+        handleKingSelection: function (selectedCase) {
+            const possibleCases = this.getKingMoving(selectedCase);
+            this.highlightCases(possibleCases);
+            // this.highlightCaptureCases(possibleTakes);
+            this.possibleCases = possibleCases;
+            this.possibleTakes = []
+            // this.possibleTakes = possibleTakes;
+        },
+
         handleQueenSelection: function (selectedCase) {
             const possibleCases = this.getQueenMoving(selectedCase);
-
             const possibleTakes = this.getQueenCapture(selectedCase);
             this.highlightCases(possibleCases);
             this.highlightCaptureCases(possibleTakes);
@@ -39,7 +91,6 @@ export default {
 
         handleRookSelection: function (selectedCase) {
             const possibleCases = this.getRookMoving(selectedCase);
-
             const possibleTakes = this.getRookCapture(selectedCase);
             this.highlightCases(possibleCases);
             this.highlightCaptureCases(possibleTakes);
@@ -66,7 +117,6 @@ export default {
             this.possibleTakes = possibleTakes;
         },
 
-        ///////////////////// PAWN /////////////////////
         handlePawnSelection: function (selectedCase) {
             const possibleCases = this.getPawnMoving(selectedCase);
             const possibleTakes = this.getPawnCapture(selectedCase);
@@ -74,33 +124,6 @@ export default {
             this.highlightCaptureCases(possibleTakes);
             this.possibleCases = possibleCases;
             this.possibleTakes = possibleTakes;
-        },
-
-        isCase: function (caseId) {
-            return this.board.find(c => c.id === caseId);
-        },
-
-        isOpponentPiece: function (color, caseId) {
-            const piece = this.board.find(c => c.id === caseId).activePiece;
-            return color !== piece.color;
-        },
-
-        movePiece: function (caseToMove, pieceToMove) {
-            const newCase = this.board.find(i => i.id === caseToMove.id);
-            const previousCase = this.board.find(c => c.activePiece && c.activePiece.id === pieceToMove.id);
-            previousCase.activePiece = null;
-            newCase.activePiece = pieceToMove;
-            this.resetBoardSelection();
-        },
-
-        capturePiece: function (caseToTake, piece) {
-            const capturedPiece = this.board.find(c => c.id === caseToTake.id).activePiece;
-            this.capturedPieces.push(capturedPiece);
-            const index = this.activePieces.indexOf(capturedPiece);
-            this.activePieces.splice(index, 1);
-            this.movePiece(caseToTake, piece);
-            return this.$emit('pieceTaken', this.capturedPieces);
-
         }
     }
 }

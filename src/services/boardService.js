@@ -2,7 +2,7 @@ import pieces from "../pieces"
 export default {
     mixins: [pieces],
     data() {
-        return {}
+        return {isMock: false, mockBoard: null}
     },
     methods: {
         setBoard: function () {
@@ -42,6 +42,25 @@ export default {
             return this.pieces.find(p => p.startingCase === caseId);
         },
 
+        isCase: function (caseId) {
+            return this.board.find(c => c.id === caseId);
+        },
+
+        isCaseFree: function (caseId) {
+            const board = this.isMock ? this.mockBoard : this.board;
+            const boardCase = board.find(c => c.id === caseId);
+            if (boardCase && !boardCase.activePiece) {
+                return true;
+            }
+            return false;
+        },
+
+        getPieceOnCase: function (caseId) {
+            const board = this.isMock ? this.mockBoard : this.board;
+            const boardCase = board.find(c => c.id === caseId);
+            return boardCase.activePiece;
+        },
+
         highlightCases: function (casesId = []) {
             casesId.forEach(caseId => this.highlightCase(caseId));
         },
@@ -64,6 +83,91 @@ export default {
             this.$refs.caseComponent.forEach(caseObj => {
                 caseObj.isHighlight = false;
                 caseObj.isHighlightCapture = false;
+            });
+        },        
+
+        isOpponentPiece: function (color, caseId) {
+            const board = this.isMock ? this.mockBoard : this.board;
+            const piece = board.find(c => c.id === caseId).activePiece;
+            return color !== piece.color;
+        },
+
+        getCasesWithoutCheck: function (selectedCase, caseList) {
+            const arr = [];
+            this.isMock = true;
+            caseList.forEach(c => {
+                const board = this.simulateMove(selectedCase, c);
+                this.mockBoard = board;
+                const attackedCases = this.getAttackedCases({
+                    board
+                });
+                if (!attackedCases.includes(c)) {
+                    arr.push(c);
+                }
+                this.mockBoard = null;
+            });
+            this.isMock = false;
+            this.mockBoard = null;
+            return arr;
+            // const attackedCases = this.getAttackedCases();
+            // return caseList.filter(c => !attackedCases.includes(c));
+        },
+
+        simulateMove: function (selectedCase, newCase) {
+            // let testBoard = Object.assign([...this.board]);
+            // const testBoard = [];
+            // for (let i = 0; i < this.board.length; i++) {
+            //     testBoard.push(Object.assign( this.board[i]))
+            // }
+            // const testBoard = [...this.board]
+            const testBoard = JSON.parse(JSON.stringify(this.board));
+            const rmCase = testBoard.find(c => c.id === selectedCase.id);
+            const piece = rmCase.activePiece;
+            rmCase.activePiece = null;
+            const ncCase = testBoard.find(c => c.id === newCase);
+            ncCase.activePiece = piece;
+            return testBoard;
+
+        },
+
+        getAttackedCases: function (options = {}) {
+            const activeCases = this.getActiveCases(options);
+            const arr = [];
+            activeCases.forEach(c => {
+                const captures = this.getPieceCaptures(c, options);
+                if (captures.length) {
+                    arr.push(captures);
+                }
+            })
+            return Array.from(new Set(arr.flat()));
+        },
+
+        isKingChecked: function (caseList) {
+            let checked = false;
+            caseList.forEach(c => {
+                const piece = this.getPieceOnCase(c);
+                if (piece.type === "king") {
+                    checked = true;
+                }
+            });
+            return checked;
+        },
+
+        getCheckedKings: function (caseList) {
+            const arr = [];
+            caseList.forEach(c => {
+                const piece = this.getPieceOnCase(c);
+                if (piece.type === "king") {
+                    arr.push(piece);
+                }
+            });
+            return arr;
+        },
+
+        getActiveCases: function (options = {}) {
+            const board = options.board || this.board;
+            return board.filter(c => {
+                return !this.isCaseFree(c.id)
             });
         },
 
@@ -193,14 +297,6 @@ export default {
                 }
             }
             return arr;
-        },
-
-        isCaseFree: function (caseId) {
-            const boardCase = this.board.find(c => c.id === caseId);
-            if (boardCase && !boardCase.activePiece) {
-                return true;
-            }
-            return false;
-        },
+        }
     }
 }

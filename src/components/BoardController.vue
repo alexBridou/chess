@@ -1,7 +1,7 @@
 <template>
     <div class="boardController">
         <button class="switch" v-on:click="onSwitchSide($event)">switch side</button>
-        <Board ref="boardComponent"  @pieceTaken="onPieceTaken($event)"></Board>
+        <Board ref="boardComponent"  @pieceTaken="onPieceTaken($event)"  @pieceMoved="onPieceMoved($event)"></Board>
         <CaptureZone  ref="captureZone"></CaptureZone>
     </div>
 </template>
@@ -22,6 +22,10 @@ export default {
         
         onPieceTaken: function (capturedPieces) {
             this.$refs.captureZone.updateCaptureZone(capturedPieces);
+        },
+
+        onPieceMoved: function (event) {
+            this.$refs.boardComponent.onPieceMoved(event);
         }
     }
 }

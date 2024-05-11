@@ -28,6 +28,8 @@ export default {
             selectedPiece: null, // piece selected by player
             possibleCases: null,
             possibleTakes: null,
+            isWhiteCheck: false,
+            isBlackCheck: false,
             columns: [
                 "a", "b", "c", "d", "e", "f", "g", "h"
             ],
@@ -38,7 +40,6 @@ export default {
     beforeMount() {
         this.setBoard();
         this.activePieces = this.pieces;
-        console.log(this);
     },
 
     methods: {
@@ -48,6 +49,26 @@ export default {
                 return this.handlePieceSelection(caseObject)
             }
             return this.handleCaseSelection(caseObject);
+        },
+
+        onPieceMoved: function (e) {
+            const attackedCases = this.getAttackedCases();
+            if (this.isKingChecked(attackedCases)) {
+                const checked = this.getCheckedKings(attackedCases);
+                if (checked.length === 1) {
+                    if (checked[0].color === "B") {
+                        this.isBlackCheck = true;
+                    } else {
+                        this.isWhiteCheck = true;
+                    }
+                } else {
+                    this.isBlackCheck = true;
+                    this.isWhiteCheck = true;
+                }
+            } else {
+                this.isWhiteCheck = false;
+                this.isBlackCheck = false;
+            }
         },
 
         onRightClick: function (e) {
@@ -67,6 +88,7 @@ export default {
             } else if (this.possibleTakes && this.possibleTakes.find(p => p === caseObject.id)) {
                 return this.capturePiece(caseObject, this.selectedPiece);
             }
+            return this.resetBoardSelection();
         },
 
         resetBoardSelection: function () {

@@ -4,14 +4,37 @@ export default {
         return {}
     },
     methods: {
-        ///////////////////// QUEEN /////////////////////
-        getQueenMoving: function (selectedCase) {
-            const line = this.getLine(selectedCase);
-            const column = this.getColumn(selectedCase);
-            return this.getQueenLegalMoves(selectedCase, line, column);
+        ///////////////////// KING /////////////////////   
+        getKingMoving: function (selectedCase) {
+            const availableCases = this._getKingMoving(selectedCase);
+            const freeCases = availableCases.filter(c => this.isCaseFree(c));
+            let casesWithoutCheck = [];
+            if (freeCases.length) {
+                casesWithoutCheck = this.getCasesWithoutCheck(selectedCase, freeCases);
+            }
+            return casesWithoutCheck;
         },
 
-        getQueenLegalMoves: function (selectedCase, line, column) {
+        _getKingMoving: function (selectedCase) {
+            const isWhite = selectedCase.activePiece.color === "W";
+            const line = this.getLine(selectedCase);
+            const column = this.getColumn(selectedCase);
+            const currentColumnIndex = this.columns.indexOf(column);
+            const previousColumn = this.columns[isWhite ? currentColumnIndex - 1 : currentColumnIndex + 1] || "";
+            const nextColumn = this.columns[isWhite ? currentColumnIndex + 1 : currentColumnIndex - 1] || "";
+            const nextLine = isWhite ? line + 1 : line - 1;
+            const previousLine = isWhite ? line - 1 : line + 1;
+            const arr = [previousColumn.concat(nextLine), previousColumn.concat(previousLine), previousColumn.concat(line), nextColumn.concat(nextLine), nextColumn.concat(previousLine), nextColumn.concat(line), column.concat(nextLine), column.concat(previousLine)];
+            return arr.filter(c => this.isCase(c));
+
+        },
+        
+        getKingCapture: function () {
+            return [];
+        },
+
+        ///////////////////// QUEEN /////////////////////
+        getQueenMoving: function (selectedCase) {
             const rookMoving = this.getRookMoving(selectedCase);
             const bishopMoving = this.getBishopMoving(selectedCase);
             return Array.from(new Set(rookMoving.concat(bishopMoving)));
